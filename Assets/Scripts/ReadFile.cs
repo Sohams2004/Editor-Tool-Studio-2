@@ -5,14 +5,15 @@ using System.IO;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 using System.Linq;
+using System.Text;
 
 public class ReadFile : MonoBehaviour
 {
-    GameObject[,] tileGrid;
+    public GameObject[,] tileGrid;
 
-    [SerializeField] GameObject wall, ground, goal, player, box;
-    [SerializeField] GameObject parentGameobject;
-    [SerializeField] int fileIndex;
+    [SerializeField] public GameObject wall, ground, goal, player, box;
+    [SerializeField] public GameObject parentGameobject;
+    [SerializeField] public int fileIndex;
     [SerializeField] bool isLevel;
 
     int height;
@@ -54,7 +55,7 @@ public class ReadFile : MonoBehaviour
 
                 if (character == '@')
                 {
-                    Debug.Log(line[j]);
+                    //Debug.Log(line[j]);
                     tileGrid[i, j] = Instantiate(wall, position, Quaternion.identity);
                     tileGrid[i, j].transform.parent = parentGameobject.transform;
                 }
@@ -68,21 +69,77 @@ public class ReadFile : MonoBehaviour
                 if (character == 'x')
                 {
                     tileGrid[i, j] = Instantiate(goal, position, Quaternion.identity);
-                    tileGrid[i, j].transform.parent = parentGameobject.transform;
+                    tileGrid[i, j].transform.parent = parentGameobject.transform;                    
                 }
 
                 if (character == 'o')
                 {
                     tileGrid[i, j] = Instantiate(box, position, Quaternion.identity);
-                    tileGrid[i, j].transform.parent = parentGameobject.transform;
+                    tileGrid[i, j].transform.parent = parentGameobject.transform;             
                 }
 
                 if (character == '<' || character == '>' || character == '^' || character == 'v')
                 {
                     tileGrid[i, j] = Instantiate(player, position, Quaternion.identity);
-                    tileGrid[i, j].transform.parent = parentGameobject.transform;
+                    tileGrid[i, j].transform.parent = parentGameobject.transform;                 
                 }
             }
         }
+    }
+
+    char TileChar(GameObject tile)
+    {
+        if (tile == null)
+        {
+            return ' ';
+        }
+
+        if (tile.CompareTag("Wall"))
+        {
+            return '@';
+        }
+
+        else if (tile.CompareTag("Ground"))
+        {
+            return ' ';
+        }
+
+        else if (tile.CompareTag("Goal"))
+        {
+            return 'x';
+        }
+
+        else if (tile.CompareTag("Box"))
+        {
+            return 'o';
+        }
+
+        else if (tile.CompareTag("Player"))
+        {
+            return 'v';
+        }
+
+        else
+        {
+            return ' ';
+        }
+    }
+
+    public string LevelData()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                GameObject tile = tileGrid[i, j];
+                char tileChar = TileChar(tile);
+                stringBuilder.Append(tileChar);
+            }
+            stringBuilder.Append("\n");
+        }
+
+        return stringBuilder.ToString();
     }
 }
